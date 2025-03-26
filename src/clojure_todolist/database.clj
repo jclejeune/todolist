@@ -28,10 +28,12 @@
                              :completed false})]
     (get result :id)))
 
-;; Fonction pour récupérer toutes les tâches
+;; Fonction pour récupérer toutes les tâches avec date formatée
 (defn get-todos []
   (sql/query db-spec
-             ["SELECT * FROM todos ORDER BY created_at DESC"]
+             ["SELECT id, title, description, completed, 
+               strftime('%d/%m/%Y %H:%M', created_at) as created_at 
+               FROM todos ORDER BY created_at DESC"]
              {:builder-fn rs/as-unqualified-maps}))
 
 ;; Fonction pour marquer une tâche comme terminée
@@ -43,3 +45,10 @@
 ;; Fonction pour supprimer une tâche
 (defn delete-todo! [id]
   (sql/delete! db-spec :todos {:id id}))
+
+;; Fonction pour mettre à jour une tâche
+(defn update-todo! [id title description]
+  (sql/update! db-spec :todos
+               {:title title
+                :description description}
+               {:id id}))
