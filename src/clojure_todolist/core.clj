@@ -1,22 +1,20 @@
 (ns clojure-todolist.core
   (:require [seesaw.core :as s]
-            [seesaw.table :as table]
             [clojure-todolist.database :as db])
   (:import [javax.swing.table DefaultTableModel])
   (:gen-class))
 
 ;; Atome pour stocker les tâches
-(def todos-data (atom []))
+(def todos-data (atom (db/get-todos)))
 
-;; Fonction pour créer le modèle de table initial
-(defn create-table-model []
-  (let [column-names ["ID" "Titre" "Description" "Terminé"]
-        model (DefaultTableModel. (into-array column-names) 0)]
-    model))
+(defn refresh-todos-data! []
+  (reset! todos-data (db/get-todos)))
+
 
 ;; Fonction pour actualiser la table des tâches
 (defn refresh-todos-table! [table]
-  (let [todos (db/get-todos)
+  (refresh-todos-data!) ;; Mettez à jour l'atome en premier
+  (let [todos @todos-data ;; Utilisez l'atome mis à jour
         model (.getModel table)]
     ;; Nettoyer le modèle existant
     (while (> (.getRowCount model) 0)
@@ -31,6 +29,11 @@
                  (get todo :description)
                  (get todo :completed)])))))
 
+;; Fonction pour créer le modèle de table initial
+(defn create-table-model []
+  (let [column-names ["ID" "Titre" "Description" "Terminé"]
+        model (DefaultTableModel. (into-array column-names) 0)]
+    model))
 ;; Création de la fenêtre principale
 (defn create-main-frame []
   (let [title-input (s/text :text "Titre de la tâche")
@@ -95,7 +98,7 @@
      :on-close :exit)))
 
 ;; Fonction principale
-(defn -main [& args]
+(defn -main [& _]
   ;; Initialisation de la base de données
   (db/init-db!)
 
