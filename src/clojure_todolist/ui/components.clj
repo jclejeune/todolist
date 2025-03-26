@@ -12,7 +12,7 @@
             :foreground Color/WHITE
             :font (font/font :name "Arial" :style :bold :size 12)))
 
-(defn create-input-panel []
+(defn ^:clj-kondo/ignore create-input-panel []
   (let [title-input (s/text
                      :text "Titre de la tâche"
                      :font (font/font :name "Arial" :size 14)
@@ -35,7 +35,7 @@
      :desc-input desc-input
      :add-button add-button}))
 
-(defn create-header []
+(defn ^:clj-kondo/ignore create-header []
   (let [title-label (s/label
                      :text "Gestionnaire de Tâches"
                      :font (font/font :name "Arial" :style :bold :size 24)
@@ -45,7 +45,7 @@
      :border (border/empty-border :thickness 20)
      :background (Color/decode styles/bg-color))))
 
-(defn create-select-panel []
+(defn ^:clj-kondo/ignore create-select-panel []
   (let [select-all-checkbox (JCheckBox. "Tout")]
     {:panel (s/horizontal-panel
              :items [select-all-checkbox]

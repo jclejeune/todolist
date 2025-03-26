@@ -1,8 +1,9 @@
 (ns clojure-todolist.core
   (:require [seesaw.core :as s]
             [clojure-todolist.database :as db]
-            [clojure-todolist.state :as state]
+            [clojure-todolist.state :as state] 
             [clojure-todolist.ui.core :as ui])
+  
   (:gen-class))
 
 ;; Fonction principale

@@ -1,17 +1,18 @@
 (ns clojure-todolist.ui.renderers
   (:require [seesaw.core :as s]
-            [clojure-todolist.ui.styles :as styles]
+            [clojure-todolist.ui.dialogs :as dialogs]
             [clojure-todolist.model :as model])
   (:import [javax.swing JButton JCheckBox AbstractCellEditor]
-           [javax.swing.table DefaultTableModel DefaultTableCellRenderer TableCellRenderer TableCellEditor]
+           [javax.swing.table DefaultTableModel TableCellRenderer TableCellEditor]
            [java.awt Color]
            [java.awt.event ActionListener]))
 
-;; Déclaration préalable
-(declare create-edit-dialog)
+;; Déclaration préalable si nécessaire
+(declare create-action-panel)
 
-;; Modèle de table amélioré
-(defn create-table-model []
+;; Modèle de table - à utiliser lors de la création de table
+;; Modèle de table - à utiliser lors de la création de table
+(defn ^:clj-kondo/ignore create-table-model []
   (proxy [DefaultTableModel] [(into-array ["Sélection" "ID" "Titre" "Description" "Terminé" "Date" "Actions"])
                               0]
     (isCellEditable [row col]
@@ -31,43 +32,43 @@
         (.setHorizontalAlignment checkbox JCheckBox/CENTER)
         checkbox))))
 
-;; Panneau d'actions
+;; Panneau d'actions pour les boutons
 (defn create-action-panel [table todos-table row]
   (let [edit-btn (JButton. "Modifier")
         complete-btn (JButton. "Terminé")
         delete-btn (JButton. "Supprimer")
         current-id (-> table (.getValueAt row 1))
         panel (s/horizontal-panel :items [edit-btn complete-btn delete-btn])]
-
+    
     ;; Style des boutons
-    (.setBackground edit-btn (Color/decode styles/warning-color))
+    (.setBackground edit-btn (Color/decode "#fbbc05"))
     (.setForeground edit-btn Color/WHITE)
-    (.setBackground complete-btn (Color/decode styles/success-color))
+    (.setBackground complete-btn (Color/decode "#34a853"))
     (.setForeground complete-btn Color/WHITE)
-    (.setBackground delete-btn (Color/decode styles/danger-color))
+    (.setBackground delete-btn (Color/decode "#ea4335"))
     (.setForeground delete-btn Color/WHITE)
-
+    
     ;; Actions des boutons
     (.addActionListener edit-btn
-                        (proxy [ActionListener] []
-                          (actionPerformed [_]
-                            (let [title (-> table (.getValueAt row 2))
-                                  desc (-> table (.getValueAt row 3))
-                                  edit-dialog (create-edit-dialog current-id title desc todos-table)]
-                              (.setVisible edit-dialog true)))))
-
+      (proxy [ActionListener] []
+        (actionPerformed [_]
+          (let [title (-> table (.getValueAt row 2))
+                desc (-> table (.getValueAt row 3))
+                edit-dialog (dialogs/create-edit-dialog current-id title desc todos-table)]
+            (.setVisible edit-dialog true)))))
+    
     (.addActionListener complete-btn
-                        (proxy [ActionListener] []
-                          (actionPerformed [_]
-                            (model/complete-todo! current-id)
-                            (model/update-table-from-state! todos-table))))
-
+      (proxy [ActionListener] []
+        (actionPerformed [_]
+          (model/complete-todo! current-id)
+          (model/update-table-from-state! todos-table))))
+    
     (.addActionListener delete-btn
-                        (proxy [ActionListener] []
-                          (actionPerformed [_]
-                            (model/delete-todo! current-id)
-                            (model/update-table-from-state! todos-table))))
-
+      (proxy [ActionListener] []
+        (actionPerformed [_]
+          (model/delete-todo! current-id)
+          (model/update-table-from-state! todos-table))))
+    
     panel))
 
 ;; Renderer pour les boutons d'action
@@ -91,9 +92,9 @@
         (reset! current-row row)
         (reset! panel (create-action-panel table todos-table row))
         @panel)
-
-      (getCellEditorValue []
+      
+      (getCellEditorValue [] 
         "")
-
-      (isCellEditable [_]
+      
+      (isCellEditable [_] 
         true))))

@@ -2,7 +2,8 @@
   (:require [seesaw.core :as s]
             [seesaw.font :as font]
             [seesaw.border :as border]
-            [clojure-todolist.model :as model])
+            [clojure-todolist.model :as model]
+            )
   (:import [javax.swing UIManager JButton JCheckBox AbstractCellEditor]
            [javax.swing.table DefaultTableModel DefaultTableCellRenderer TableCellRenderer TableCellEditor]
            [java.awt Color]
